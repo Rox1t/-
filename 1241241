@@ -1,0 +1,89 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        while (true)
+        {
+            try
+            {
+                Console.WriteLine("Введите уравнение вида a * x^2 + b * x + c = 0");
+                Console.Write("Введите значение a: ");
+                int a = FormatData(Console.ReadLine());
+
+                Console.Write("Введите значение b: ");
+                int b = FormatData(Console.ReadLine());
+
+                Console.Write("Введите значение c: ");
+                int c = FormatData(Console.ReadLine());
+
+                double discriminant = b * b - 4 * a * c;
+
+                if (discriminant > 0)
+                {
+                    double x1 = (-b + Math.Sqrt(discriminant)) / (2 * a);
+                    double x2 = (-b - Math.Sqrt(discriminant)) / (2 * a);
+                    Console.WriteLine($"x1 = {x1}, x2 = {x2}");
+                }
+                else if (discriminant == 0)
+                {
+                    double x = -b / (2 * a);
+                    Console.WriteLine($"x = {x}");
+                }
+                else
+                {
+                    throw new NoRealSolutionException("Вещественных значений не найдено");
+                }
+
+                break;
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Ошибка ввода данных: {ex.Message}");
+            }
+            catch (NoRealSolutionException ex)
+            {
+                FormatData(ex.Message, Severity.Warning);
+            }
+        }
+    }
+
+    static int FormatData(string data)
+    {
+        if (!int.TryParse(data, out int result))
+        {
+            throw new FormatException(data);
+        }
+        return result;
+    }
+
+    static void FormatData(string message, Severity severity)
+    {
+        if (severity == Severity.Error)
+        {
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+        else if (severity == Severity.Warning)
+        {
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+    }
+}
+
+class NoRealSolutionException : Exception
+{
+    public NoRealSolutionException(string message) : base(message)
+    {
+    }
+}
+
+enum Severity
+{
+    Error,
+    Warning
+}
